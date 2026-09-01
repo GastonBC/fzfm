@@ -18,6 +18,7 @@
 - **Directory preview** using `eza` (fallback to `ls`)
 - **Customizable multimedia file opener** (`wslview`, `xdg-open`, etc.)
 - **Fully configurable** via environment variables
+- Forked to force bash shell and search recursively every folder
 
 ## Dependencies
 
