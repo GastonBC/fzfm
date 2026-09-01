@@ -100,10 +100,10 @@ open_file() {
 fzfm() {
     setup_dependencies
 
-    local list_command="$LIST_COMMAND $LIST_ARGS"
+    local list_command="fd --type f --type d --hidden --exclude .git"
 
     while true; do
-        selection=$( (echo ".."; eval "$list_command") | fzf \
+        selection=$( (echo ".."; eval "$list_command") | SHELL=bash fzf \
             --ansi \
             --reverse \
             --height 100% \
