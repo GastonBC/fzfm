@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Forces bash shell and recursively searches all folders
 
 # Configuration variables with defaults
 MEDIA_OPENER="wslview"
