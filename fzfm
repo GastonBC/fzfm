@@ -63,7 +63,14 @@ handle_file() {
 fzfm() {
   setup_dependencies
 
-  local list_command="fd --type f --type d --hidden --exclude .git"
+  local list_command="fd --type f --type d --hidden \
+  --exclude .git \
+  --exclude '*cache*' \
+  --exclude node_modules \
+  --exclude .venv \
+  --exclude target \
+  --exclude build \
+  --exclude dist"
 
   while true; do
     selection=$( (
