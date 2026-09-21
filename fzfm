@@ -105,7 +105,7 @@ fzfm() {
                 elif [[ -d \"\$file\" ]]; then
                     echo \"󰉋 Folder: \$file\"
                     echo \"\"
-                    $list_command \"\$file\" 2>/dev/null
+                    $LIST_COMMAND \"\$file\" 2>/dev/null
                 elif [[ -f \"\$file\" ]]; then
                     echo \"󰈙 File: \$file\"
                     echo \"\"
