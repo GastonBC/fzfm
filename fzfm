@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Forces bash shell and recursively searches all folders
-# Finds the file, outputs to terminal and copies the path
+# Finds the file and opens it with the default editor
+# Ctrl + Y copies the path of whatever is selected to clipboard and echoes it
 
 LIST_COMMAND="eza"
 PREVIEW_COMMAND="batcat"
+EDITOR_CMD="${EDITOR:-nvim}"
 
 # Function to check if a command exists
 command_exists() {
@@ -43,11 +45,11 @@ setup_dependencies() {
   fi
 }
 
-# Handle selected file: copy absolute path to clipboard and print it
-handle_file() {
-  local file="$1"
+# Handle selected file/folder: copy absolute path to clipboard and print it
+copy_and_print_path() {
+  local target="$1"
   local full_path
-  full_path="$(realpath "$file")"
+  full_path="$(realpath "$target")"
 
   local clip_cmd
   clip_cmd="$(get_clipboard_cmd)"
@@ -73,7 +75,9 @@ fzfm() {
   --exclude dist"
 
   while true; do
-    selection=$( (
+    # Capturar la tecla presionada junto a la selección
+    local fzf_output
+    fzf_output=$( (
       echo ".."
       eval "$list_command"
     ) | SHELL=bash fzf \
@@ -88,8 +92,8 @@ fzfm() {
       --border-label=" 󱉭 $(pwd)/ " \
       --border-label-pos center \
       --color 'fg:#cdd6f4,fg+:#cdd6f4,bg+:#313244,border:#a5aac3,pointer:#cba6f7,label:#cdd6f4' \
+      --expect=ctrl-y \
       --bind "right:accept" \
-      --bind "enter:accept" \
       --bind "shift-up:preview-up" \
       --bind "shift-down:preview-down" \
       --bind "ctrl-r:reload($list_command)" \
@@ -111,14 +115,27 @@ fzfm() {
                 fi
             ")
 
+    # Separar la tecla de la selección
+    local key
+    local selection
+    key=$(head -n 1 <<< "$fzf_output")
+    selection=$(tail -n +2 <<< "$fzf_output")
+
     [[ -z "$selection" ]] && break
 
+    # Si se presionó Ctrl+Y, copiar path y salir
+    if [[ "$key" == "ctrl-y" ]]; then
+      copy_and_print_path "$selection"
+      break
+    fi
+
+    # Comportamiento por defecto (Enter / Right)
     if [[ "$selection" == ".." ]]; then
       cd .. || break
     elif [[ -d "$selection" ]]; then
       cd "$selection" || break
     elif [[ -f "$selection" ]]; then
-      handle_file "$selection"
+      "$EDITOR_CMD" "$selection"
       break
     else
       break
